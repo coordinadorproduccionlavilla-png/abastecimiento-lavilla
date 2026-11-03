@@ -37,7 +37,8 @@ body.marco > :not(#marco):not(#plan){display:none}
 <iframe id="marco" title="La Villa · Abastecimiento" allow="clipboard-write; web-share"></iframe>
 <a id="plan" href="#" target="_blank" rel="noopener">¿No carga? Abrir en el navegador</a>
 <script>
-// Enlace de la aplicación (Google Apps Script). Si se crea una implementación nueva, cambiar solo esta línea.
+// Enlace de la aplicación (Google Apps Script). Safari bloquea la sesión de Google dentro del marco (error 401), por eso en Safari se abre directo.
+// Si se crea una implementación nueva, cambiar solo esta línea.
 var APP = 'https://script.google.com/macros/s/AKfycbw7LUNs_5jrgyxSaPqSwReOErra4_TB4m0dieWTmLYNYQH8goIW6VdD-Fo_casZnERYvQ/exec';
 
 if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(function () {});
@@ -59,8 +60,9 @@ window.addEventListener('appinstalled', function () {
 var instalado = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
 var movil = /iphone|ipad|ipod|android/i.test(navigator.userAgent);
 var ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
-if (instalado && !movil) {
-  // Computador (Mac o Windows): abrir la app dentro de esta ventana, para que no se abra una segunda ventana del navegador.
+var safari = /safari/i.test(navigator.userAgent) && !/chrome|chromium|crios|edg|opr/i.test(navigator.userAgent);
+if (instalado && !movil && !safari) {
+  // Computador con Chrome/Edge: abrir la app dentro de esta ventana, para que no se abra una segunda ventana del navegador.
   document.body.className = 'marco';
   document.getElementById('marco').src = destino;
   setTimeout(function () { document.getElementById('plan').style.display = 'inline-block'; }, 8000);
